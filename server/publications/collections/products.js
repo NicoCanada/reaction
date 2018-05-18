@@ -147,6 +147,10 @@ function filterProducts(productFilters) {
       }, {
         slug: { $in: shopIdsOrSlugs }
       }]
+    }, {
+      fields: {
+        "_id": 1
+      }
     }).map((shop) => shop._id);
 
     // If we found shops, update the productFilters
@@ -320,22 +324,32 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
     return this.ready();
   }
 
-  // Get active shop id's to use for filtering
-  const activeShopsIds = Shops.find({
-    $or: [
-      { "workflow.status": "active" },
-      { _id: primaryShopId }
-    ]
-  }, {
-    fields: {
-      _id: 1
-    }
-  }).fetch().map((activeShop) => activeShop._id);
+  // if the current shop is the primary shop, get products from all shops
+  // otherwise, only list products from _this_ shop.
+  if (shopId === primaryShopId) {
+    activeShopsIds = Shops.find({
+      $or: [
+        { "workflow.status": "active" },
+        { _id: primaryShopId }
+      ]
+    }, {
+      fields: {
+        _id: 1
+      }
+    }).fetch().map((activeShop) => activeShop._id);
+  } else {
+    activeShopsIds = [shopId];
+  }
 
   const selector = filterProducts(productFilters);
 
   if (selector === false) {
     return this.ready();
+  }
+
+  // if shops were requested in the product filter
+  if (selector.shopId && Array.isArray(selector.shopId.$in)) {
+    activeShopsIds = _.intersection(selector.shopId.$in, activeShopsIds);
   }
 
   // We publish an admin version of this publication to admins of products who are in "Edit Mode"
@@ -347,7 +361,7 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
       $in: [true, false, null, undefined]
     };
     selector.shopId = {
-      $in: userAdminShopIds
+      $in: _.intersection(userAdminShopIds, activeShopsIds)
     };
 
     // Get _ids of top-level products
@@ -359,7 +373,6 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
         _id: 1
       }
     }).map((product) => product._id);
-
 
     const productSelectorWithVariants = extendSelectorWithVariants("Products", selector, productFilters, productIds);
 
