@@ -20,8 +20,6 @@ describe("Publication", function () {
   let sandbox;
 
   let merchantShop1ProductIds;
-  let merchantShop2ProductIds;
-  let primaryShopProductIds;
   let allProductIds;
   let activeMerchantProductIds;
 
@@ -131,8 +129,6 @@ describe("Publication", function () {
       });
 
       merchantShop1ProductIds = [productId1, productId2, productId3];
-      merchantShop2ProductIds = [productId4];
-      primaryShopProductIds = [productId5];
       allProductIds = [productId1, productId2, productId3, productId4, productId5];
       activeMerchantProductIds = [productId2, productId3, productId4];
 
@@ -148,10 +144,10 @@ describe("Publication", function () {
         sandbox.stub(Reaction, "getShopsWithRoles", () => [shopId, merchantShopId, primaryShopId]);
 
         collector.collect("Products", 24, undefined, {}, (collections) => {
-          const productIds = collections.Products.map(p => p._id);
+          const productIds = collections.Products.map((p) => p._id);
 
           expect(productIds).to.have.members(allProductIds);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return all products from the current shop to admins in a Merchant Shop", function (done) {
@@ -164,10 +160,10 @@ describe("Publication", function () {
         // let isDone = false;
 
         collector.collect("Products", 24, undefined, {}, (collections) => {
-          const productIds = collections.Products.map(p => p._id);
+          const productIds = collections.Products.map((p) => p._id);
 
           expect(productIds).to.have.members(merchantShop1ProductIds);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("returns products from only the shops for which an admin has createProduct Role", function (done) {
@@ -178,10 +174,10 @@ describe("Publication", function () {
         sandbox.stub(Reaction, "getShopsWithRoles", () => [shopId]);
 
         collector.collect("Products", 24, undefined, {}, (collections) => {
-          const productIds = collections.Products.map(p => p._id);
+          const productIds = collections.Products.map((p) => p._id);
 
           expect(productIds).to.have.members(merchantShop1ProductIds);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should have an expected product title", function (done) {
@@ -197,7 +193,7 @@ describe("Publication", function () {
           const expectedTitles = ["My Little Pony", "Shopkins - Peachy"];
 
           expect(expectedTitles.some((title) => title === data.title)).to.be.ok;
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return only visible products to visitors", function (done) {
@@ -211,7 +207,7 @@ describe("Publication", function () {
 
           expect(products.length).to.equal(2);
           expect(expectedTitles.some((title) => title === data.title)).to.be.ok;
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return only products matching query", function (done) {
@@ -225,7 +221,7 @@ describe("Publication", function () {
           const data = products[0];
 
           expect(data.title).to.equal("Shopkins - Peachy");
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should not return products not matching query", function (done) {
@@ -238,7 +234,7 @@ describe("Publication", function () {
           const products = collections.Products;
 
           expect(products.length).to.equal(0);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return products in price.min query", function (done) {
@@ -251,7 +247,7 @@ describe("Publication", function () {
           const products = collections.Products;
 
           expect(products.length).to.equal(1);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return products in price.max query", function (done) {
@@ -264,7 +260,7 @@ describe("Publication", function () {
           const products = collections.Products;
 
           expect(products.length).to.equal(2);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return products in price.min - price.max range query", function (done) {
@@ -277,7 +273,7 @@ describe("Publication", function () {
           const products = collections.Products;
 
           expect(products.length).to.equal(2);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return products where value is in price set query", function (done) {
@@ -290,7 +286,7 @@ describe("Publication", function () {
           const products = collections.Products;
 
           expect(products.length).to.equal(1);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return products from all shops when multiple shops are provided", function (done) {
@@ -300,10 +296,10 @@ describe("Publication", function () {
         sandbox.stub(Roles, "userIsInRole", () => false);
 
         collector.collect("Products", productScrollLimit, filters, {}, (collections) => {
-          const productIds = collections.Products.map(p => p._id);
+          const productIds = collections.Products.map((p) => p._id);
 
           expect(productIds).to.have.members(activeMerchantProductIds);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
     });
 
@@ -319,7 +315,7 @@ describe("Publication", function () {
           const data = products[0];
 
           expect(data.title).to.equal(product.title);
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should not return a product if handle does not match exactly", function (done) {
@@ -332,7 +328,7 @@ describe("Publication", function () {
           } else {
             expect(products).to.be.undefined;
           }
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should not return a product based on exact handle match if it isn't visible", function (done) {
@@ -346,7 +342,7 @@ describe("Publication", function () {
           } else {
             expect(products).to.be.undefined;
           }
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
 
       it("should return a product to admin based on a exact handle match even if it isn't visible", function (done) {
@@ -359,7 +355,7 @@ describe("Publication", function () {
           const data = products[0];
 
           expect(data.title).to.equal("My Little Pony");
-        }).then((_collections) => done(), done);
+        }).then(() => done(/* empty */), done);
       });
     });
   });

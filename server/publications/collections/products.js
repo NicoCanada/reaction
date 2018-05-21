@@ -149,7 +149,7 @@ function filterProducts(productFilters) {
       }]
     }, {
       fields: {
-        "_id": 1
+        _id: 1
       }
     }).map((shop) => shop._id);
 
@@ -324,6 +324,7 @@ Meteor.publish("Products", function (productScrollLimit = 24, productFilters, so
     return this.ready();
   }
 
+  let activeShopsIds;
   // if the current shop is the primary shop, get products from all shops
   // otherwise, only list products from _this_ shop.
   if (shopId === primaryShopId) {
